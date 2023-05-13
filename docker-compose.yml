@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  php-fpm:
+    build:
+      context: ./php
+      args:
+        PGID: ${PGID}
+        PUID: ${PUID}
+    user: ${PUID}:${PGID}
+    volumes:
+      - ./mounts/fileadmin:/var/www/html/fileadmin:rw
+      - ./mounts/typo3_src:/var/www/html/typo3_src:ro
+      - ./mounts/typo3conf:/var/www/html/typo3conf:rw
+      - ./mounts/uploads:/var/www/html/uploads:rw
+
+  web:
+    build:
+      context: ./web
+      args:
+        PGID: ${PGID}
+        PUID: ${PUID}
+#    user: ${PUID}:${PGID}
+    volumes:
+      - ./web/default.conf:/etc/nginx/conf.d/default.conf
+      - ./mounts/fileadmin:/var/www/html/fileadmin:rw
+      - ./mounts/typo3_src:/var/www/html/typo3_src:ro
+      - ./mounts/typo3conf:/var/www/html/typo3conf:rw
+      - ./mounts/uploads:/var/www/html/uploads:rw
+    ports:
+      - '8080:80'
